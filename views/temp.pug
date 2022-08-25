@@ -1,0 +1,11 @@
+html
+    head 
+    body 
+        h3 코인 리스트
+        input(type="date" id="startDate" value=weekAgo min="2010-01-01")
+        -console.log(date)
+        input(type="date" id="endDate" value=today min="2010-01-01")
+        ul 
+            -for(let i=0; i< coin_list.length; i++)
+                a(href=`/${coin_list[i]}`)
+                    li= coin_list[i]
