@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
+const bodyParser = require("body-parser");
 const port = 8000;
+let ejs = require("ejs");
 const mysql = require("mysql");
 const db = mysql.createConnection({
   host: "192.168.242.236",
@@ -16,9 +18,10 @@ app.listen(port, () => {
 db.connect();
 
 app.set("views", "./views");
-app.set("view engine", "pug");
+app.set("view engine", "ejs");
 app.locals.pretty = true;
 app.use(express.static("public"));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => {
   const list = db.query("show table status", (err, list) => {
@@ -32,13 +35,10 @@ app.get("/", (req, res) => {
       .toISOString()
       .split("T")[0];
 
-    console.log(`today: ${today}`);
-    console.log(`week: ${weekAgo}`);
-
     for (let i = 0; i < list.length; i++) {
       coin_list.push(list[i].Name);
     }
-    res.render("temp", {
+    res.render("index", {
       coin_list: coin_list,
       today: today,
       weekAgo: weekAgo,
@@ -47,5 +47,17 @@ app.get("/", (req, res) => {
 });
 
 app.get("/btc", (req, res) => {
-  db.query("select * from btc where date>= ");
+  //   db.query("select * from btc where date>= ");
+});
+
+app.post("/ppost", (req, res) => {
+  console.log(req.body.startDate);
+  console.log(req.body.endDate);
+  console.log(req.body.text);
+  db.query(
+    `select * from btc where date>= "${req.body.startDate}" and date <= "${req.body.endDate}"`,
+    (err, result) => {
+      res.send(result);
+    }
+  );
 });
