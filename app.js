@@ -3,36 +3,11 @@ const app = express();
 const bodyParser = require("body-parser");
 const port = 8000;
 const ejs = require("ejs");
-const mysql = require("mysql");
-const db = mysql.createConnection({
-  host: "192.168.242.236",
-  user: "root",
-  password: "0411",
-  database: "mydb",
-});
-
-let coinInfo;
-let coin_list = [];
-let today = new Date().toISOString().split("T")[0];
-let weekAgo = new Date(
-  new Date().getFullYear(),
-  new Date().getMonth(),
-  new Date().getDate() - 7
-)
-  .toISOString()
-  .split("T")[0];
+const db = require("./lib/db");
+const home = require("./lib/home");
 
 app.listen(port, () => {
   console.log(`Connect ${port}~!`);
-});
-
-db.connect();
-
-db.query("show table status", (err, list) => {
-  coinInfo = list;
-  for (let i = 0; i < list.length; i++) {
-    coin_list.push(list[i].Name);
-  }
 });
 
 app.set("views", "./views");
@@ -43,37 +18,17 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => {
-  // db.query("show table status", (err, list) => {
-  //   // let today = new Date().toISOString().split("T")[0];
-  //   // let weekAgo = new Date(
-  //   //   new Date().getFullYear(),
-  //   //   new Date().getMonth(),
-  //   //   new Date().getDate() - 7
-  //   // )
-  //   //   .toISOString()
-  //   //   .split("T")[0];
-
-  //   for (let i = 0; i < list.length; i++) {
-  //     coin_list.push(list[i].Name);
-  //   }
-
-  //   res.render("index", {
-  //     coin_list: list,
-  //     today: today,
-  //     weekAgo: weekAgo,
-  //   });
-  // });
   res.render("index", {
-    coin_list: coinInfo,
-    today: today,
-    weekAgo: weekAgo,
+    coinInitInfo: home.coinInitInfo,
+    today: home.today,
+    weekAgo: home.weekAgo,
   });
 });
 
 app.get("/:coinName", (req, res) => {
   if (
     req.params.coinName != "favicon.ico" &&
-    !coin_list.includes(req.params.coinName)
+    !home.coinNameList.includes(req.params.coinName)
   ) {
     res.status(404).json({
       status: "error",

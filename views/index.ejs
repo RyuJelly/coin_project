@@ -28,11 +28,11 @@
 
         function addCoinList() {
             const listArea = document.getElementById("coinSelect");
-            const coinInfo = <%- JSON.stringify(coin_list) %>;
+            const coinInitInfo = <%- JSON.stringify(coinInitInfo) %>;
 
-            for (let i = 0; i < coinInfo.length; i++) {
+            for (let i = 0; i < coinInitInfo.length; i++) {
                 const option = document.createElement("option");
-                const coinName = coinInfo[i].Name;
+                const coinName = coinInitInfo[i].Name;
                 option.setAttribute("value", coinName);
                 option.innerHTML = coinName; listArea.appendChild(option);
             }
